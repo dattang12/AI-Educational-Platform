@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from app.models.schemas import SummaryRequest, SummaryResponse, QuizResponse, QuizRequest
-from app.services.content_generator import generate_summary, generate_quiz
+from app.models.schemas import SummaryRequest, SummaryResponse, QuizResponse, QuizRequest, FlashCardGenerateRequest, FlashCardGenerateResponse
+from app.services.content_generator import generate_summary, generate_quiz, generate_flashcard
 
 router = APIRouter(prefix="/generate", tags=["content"])
 
@@ -13,3 +13,8 @@ def summary(req: SummaryRequest):
 def quiz(req: QuizRequest):
     result = generate_quiz(req)
     return QuizResponse(questions=result)
+
+@router.post("/flashcard-generate", response_model= FlashCardGenerateResponse)
+def flashcard(req: FlashCardGenerateRequest):
+    result = generate_flashcard(req)
+    return FlashCardGenerateResponse(flashcards=result)

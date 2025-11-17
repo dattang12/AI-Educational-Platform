@@ -1,5 +1,5 @@
 from app.services.ai_service import ask_ai
-from app.models.schemas import SummaryRequest, QuizRequest, QuizQuestion
+from app.models.schemas import SummaryRequest, QuizRequest, QuizQuestion, FlashCardGenerateRequest, FlashCardGenerateResponse, FlashCard
 import json
 
 def generate_summary(summary: SummaryRequest) -> str:
@@ -52,3 +52,43 @@ Return ONLY valid JSON in the following format:
     return converted
 
 
+def generate_flashcard(card: FlashCardGenerateRequest) -> str: 
+    prompt = f"""
+You are an AI that generates clear, concise front/back study flashcards.
+
+Create exactly {card.num_flashcards} flashcards based on the following content:
+
+\"\"\"{card.text}\"\"\"
+
+Each flashcard must include:
+- "question": a short keyword, concept, or question for the front side
+- "answer": a simple, correct explanation for the back side
+
+Return ONLY valid JSON in the following format:
+
+[
+  {{
+    "question": "string",
+    "answer": "string"
+  }}
+]
+
+Do NOT add any text outside the JSON. No markdown, no commentary.
+"""
+    raw_output = ask_ai(prompt)
+    try:
+        data = json.loads(raw_output)
+    except json.JSONDecodeError:
+        fixed = ask_ai(f"Fix the JSON formatting in this text:\n{raw_output}")
+        data = json.loads(fixed)
+    
+    converted = []
+
+    for item in data:
+        flashcard = FlashCard(
+            question=item["question"],
+            answer=item["answer"]
+        )
+        converted.append(flashcard)
+
+    return converted

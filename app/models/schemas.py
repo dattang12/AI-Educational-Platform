@@ -21,3 +21,16 @@ class QuizQuestion(BaseModel):
 
 class QuizResponse(BaseModel):
     questions: list[QuizQuestion]
+
+class FlashCardGenerateRequest(BaseModel):
+    text: str
+    num_flashcards: int = 10
+
+class FlashCard(BaseModel):
+    question: str
+    answer: str
+
+class FlashCardGenerateResponse(BaseModel):
+    flashcards: list[FlashCard]
+
+
