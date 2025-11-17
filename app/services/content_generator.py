@@ -8,15 +8,17 @@ def generate_summary(summary: SummaryRequest) -> str:
 
 def generate_quiz(quiz: QuizRequest):
     prompt = f"""
-Generate a multiple-choice quiz based on this topic:
+Generate a multiple-choice quiz based on the following text or topic:
 
 \"\"\"{quiz.text}\"\"\"
 
 Create exactly {quiz.num_question} questions.
-Each question must have exactly {quiz.num_choices} answer choices.
-- Only 1 answer is correct.
-- {quiz.num_choices - 1} answers must be incorrect.
-- Make sure the questions are clear and related to the text.
+Each question must include:
+- A clear question
+- Exactly {quiz.num_choices} answer choices
+- Only 1 correct answer
+- {quiz.num_choices - 1} incorrect but realistic answers
+- A short explanation that describes **why** the correct answer is correct
 
 Return ONLY valid JSON in the following format:
 
@@ -24,10 +26,12 @@ Return ONLY valid JSON in the following format:
   {{
     "question": "string",
     "options": ["option A", "option B", "option C", "option D"],
-    "answer": "option A"
+    "answer": "option A",
+    "explanation": "string explaining why the answer is correct"
   }}
 ]
-"""
+    """
+
     raw_output = ask_ai(prompt)
     try:
         data = json.loads(raw_output)
@@ -40,7 +44,8 @@ Return ONLY valid JSON in the following format:
         question_obj = QuizQuestion(
             question=item["question"],
             options=item["options"],
-            answer=item["answer"]
+            answer=item["answer"],
+            explanation=item["explanation"]
         )
         converted.append(question_obj)
 

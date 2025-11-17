@@ -10,13 +10,14 @@ class SummaryResponse(BaseModel):
 
 class QuizRequest(BaseModel):
     text: str
-    num_question: int = 10
+    num_question: int = 5
     num_choices: int = 4
 
 class QuizQuestion(BaseModel):
     question: str
     options: list[str]
     answer: str
+    explanation: str
 
 class QuizResponse(BaseModel):
     questions: list[QuizQuestion]
