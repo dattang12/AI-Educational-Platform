@@ -37,7 +37,7 @@ def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)):
 
-    user = authenticate_user(db, email=form_data.username, password=form_data.password)
+    user = authenticate_user(db, username=form_data.username, password=form_data.password)
 
     if not user:
         raise HTTPException(
