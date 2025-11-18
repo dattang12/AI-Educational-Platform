@@ -23,9 +23,11 @@ password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # ---------- Password helpers ----------
 
 def get_password_hash(password: str) -> str:
+    password = password[:72]
     return password_context.hash(password)
 
 def verify_password(plain_password: str, hash_password: str) -> bool:
+    plain_password = plain_password[:72]
     return password_context.verify(plain_password, hash_password)
 
 # ---------- DB session helper ----------
@@ -107,7 +109,7 @@ Find that user in the database and return it
 """
 async def get_current_user(
         token: str = Depends(oauth2_scheme), 
-        db: Session = Depends(get_db())) -> User:
+        db: Session = Depends(get_db)) -> User:
     
     credentials_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
