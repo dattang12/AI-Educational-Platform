@@ -2,23 +2,21 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from jose import jwt, JWTError
-from passlib.context import CryptContext
 
 from app.core.database import SessionLocal
 from sqlalchemy.orm import Session
 
 from app.models.user_model import User
-from app.models.schemas import UserCreate
+from app.models.schemas import UserCreate, TokenData
 from app.core.config import settings
-
 
 # OAuth2 token URL (will match route in auth.py)
 from fastapi.security import OAuth2PasswordBearer
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 # Use bcrypt to hash passwords + Handle upgrades automatically in the future
+from passlib.context import CryptContext
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 
 # ---------- Password helpers ----------
 
@@ -69,7 +67,6 @@ def authenticate_user(db: Session, username: str, password: str):
         return None
     return user
 
-
 # ---------- JWT helpers ----------
 
 """ creates a JWT token for your user after they log in.
@@ -101,14 +98,12 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 from fastapi import Depends, HTTPException, status
 """
 Read the JWT token from the request
-
 Decode the token and get the user's email
-
 Find that user in the database and return it
-
+Takes the token → checks it → extracts email → finds user → returns user
 """
 async def get_current_user(
-        token: str = Depends(oauth2_scheme), 
+        token: str = Depends(oauth2_scheme), #Automatically extract token from header
         db: Session = Depends(get_db)) -> User:
     
     credentials_exception = HTTPException(
@@ -126,7 +121,7 @@ async def get_current_user(
         if email is None:
             raise credentials_exception
         
-        token_data = token_data(email=email)
+        token_data = TokenData(email=email)
     
     except JWTError:
         raise credentials_exception
