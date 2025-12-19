@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime
 from app.core.database import Base
+from datetime import datetime
 
 class Summary(Base):
     __tablename__ = "summaries"
@@ -21,3 +22,13 @@ class Flashcard(Base):
     question = Column(String)
     answer = Column(String)
     user_id = Column(Integer, ForeignKey("users.id"))
+
+class PlainText(Base):
+    __tablename__ = "plaintext"
+
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String)
+    content = Column(Text)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    created_at = Column(DateTime, default=datetime.utcnow)
+

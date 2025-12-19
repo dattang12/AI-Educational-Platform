@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.content_model import Summary, Flashcard, Quiz
+from app.models.content_model import Summary, Flashcard, Quiz, PlainText
 
 def save_summary(db: Session, user_id: int, content: str):
     summary = Summary(user_id=user_id, content=content)
@@ -21,4 +21,16 @@ def save_quiz(db: Session, user_id: int, topic: str):
     db.commit()
     db.refresh(quiz)
     return quiz
+
+def save_plaintext(db: Session, user_id: int, filename: str, content: str):
+    doc = PlainText(
+        user_id=user_id,
+        filename=filename,
+        content=content
+    )
+    db.add(doc)
+    db.commit()
+    db.refresh(doc)
+    return doc
+
     

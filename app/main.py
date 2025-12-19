@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.core.database import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import content, auth, users
+from app.routers import content, auth, users, upload
 
 app = FastAPI(title="AI Educational Platform")
 
@@ -17,6 +17,7 @@ Base.metadata.create_all(bind=engine)
 
 app.include_router(content.router)
 app.include_router(auth.router)
+app.include_router(upload.router)
 
 @app.get("/")
 def root():
